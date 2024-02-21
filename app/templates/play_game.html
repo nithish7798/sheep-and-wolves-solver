@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheeps and Wolves Solver</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include custom CSS -->
+    <style>
+        /* Add custom styles here */
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Sheeps and Wolves Solver</h2>
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Origin</h4>
+                <!-- Display the number of sheep and wolves in the origin -->
+                <p>Sheep: {{ origin_sheep }}</p>
+                <p>Wolves: {{ origin_wolves }}</p>
+            </div>
+            <div class="col-md-6">
+                <h4>Destination</h4>
+                <!-- Display the number of sheep and wolves in the destination -->
+                <p>Sheep: {{ dest_sheep }}</p>
+                <p>Wolves: {{ dest_wolves }}</p>
+            </div>
+        </div>
+        <hr>
+        <!-- Form to input number of sheep and wolves -->
+        <form method="post" id="solveForm">
+            <div class="form-group">
+                <label for="sheep">Sheep:</label>
+                <input type="number" class="form-control" id="sheep" name="sheep" required>
+            </div>
+            <div class="form-group">
+                <label for="wolves">Wolves:</label>
+                <input type="number" class="form-control" id="wolves" name="wolves" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Start Solving</button>
+        </form>
+        <hr>
+        <!-- Buttons to shift animals left or right -->
+        <button class="btn btn-success" id="shiftLeftBtn">Shift Left</button>
+        <button class="btn btn-success" id="shiftRightBtn">Shift Right</button>
+        <!-- Logout button -->
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+
+    <!-- Bootstrap JavaScript and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JavaScript -->
+    <script>
+    let startTime; // Variable to store the start time
+    let timerInterval; // Variable to store the timer interval
+
+    // Function to start solving and initialize timer
+    $('#startSolvingBtn').click(function() {
+        event.preventDefault();
+        let sheep = $('#sheep').val();
+        let wolves = $('#wolves').val();
+        startTime = new Date(); // Capture the start time
+        // Display the timer
+        $('#timer').show();
+        // Start the timer
+        timerInterval = setInterval(updateTimer, 1000); // Update timer every second
+        // Perform validation and start solving logic here
+    });
+
+    // Function to update the timer display
+    function updateTimer() {
+        let currentTime = new Date();
+        let elapsedTime = Math.floor((currentTime - startTime) / 1000); // Elapsed time in seconds
+        let minutes = Math.floor(elapsedTime / 60);
+        let seconds = elapsedTime % 60;
+        $('#elapsedTime').text(minutes + ':' + (seconds < 10 ? '0' : '') + seconds);
+    }
+
+        // Function to shift animals left
+        $('#shiftLeftBtn').click(function() {
+            let wolvesToTransfer = parseInt(prompt("Enter the number of wolves to transfer (max 2):"));
+            if (wolvesToTransfer >= 0 && wolvesToTransfer <= 2) {
+                let sheepToTransfer = parseInt(prompt("Enter the number of sheeps to transfer (max 2):"));
+                if (sheepToTransfer >= 0 && sheepToTransfer <= 2) {
+                    // Update origin and destination counts
+                    // Check if the move is valid
+                    // Update the display
+                } else {
+                    alert("Invalid input! Please enter a number between 0 and 2 for sheeps.");
+                }
+            } else {
+                alert("Invalid input! Please enter a number between 0 and 2 for wolves.");
+            }
+        });
+
+        // Function to shift animals right
+        $('#shiftRightBtn').click(function() {
+            let wolvesToTransfer = parseInt(prompt("Enter the number of wolves to transfer (max 2):"));
+            if (wolvesToTransfer >= 0 && wolvesToTransfer <= 2) {
+                let sheepToTransfer = parseInt(prompt("Enter the number of sheeps to transfer (max 2):"));
+                if (sheepToTransfer >= 0 && sheepToTransfer <= 2) {
+                    // Update origin and destination counts
+                    // Check if the move is valid
+                    // Update the display
+                } else {
+                    alert("Invalid input! Please enter a number between 0 and 2 for sheeps.");
+                }
+            } else {
+                alert("Invalid input! Please enter a number between 0 and 2 for wolves.");
+            }
+        });
+
+        // Timer logic
+        function startTimer() {
+            // Implement your timer logic here
+        }
+    </script>
+</body>
+</html>
