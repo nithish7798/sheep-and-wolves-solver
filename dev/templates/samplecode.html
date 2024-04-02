@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sheep and Wolves Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    #game {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 50px;
+    }
+
+    #instructions {
+      margin-bottom: 20px;
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    label {
+      margin-right: 10px;
+    }
+
+    input[type="number"] {
+      width: 50px;
+      padding: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #buttons {
+      margin-bottom: 20px;
+    }
+
+    #status {
+      margin-bottom: 20px;
+    }
+
+    #side-container {
+      display: flex;
+      justify-content: space-around;
+      width: 80%;
+    }
+
+    .side {
+      width: 45%;
+      border: 1px solid black;
+      padding: 10px;
+      background-color: #fff;
+      border-radius: 5px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    p {
+      margin: 5px 0;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ffffff;
+      padding: 20px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      z-index: 9999;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 9998;
+    }
+
+    #timer {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+    }
+
+    #logout {
+      position: absolute;
+      top: 10px;
+      right: 130px;
+    }
+
+    #solution {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <h1>Sheep and Wolves Game</h1>
+    <p id="instructions">Instructions: You need to transfer the sheep and wolves to the other side.</p>
+    <div class="input-container">
+      <label for="initialSheep">Initial Number of Sheep:</label>
+      <input type="number" id="initialSheep" min="0">
+    </div>
+    <div class="input-container">
+      <label for="initialWolves">Initial Number of Wolves:</label>
+      <input type="number" id="initialWolves" min="0">
+    </div>
+    <button onclick="startPuzzle()">Start Puzzle</button>
+    <div id="buttons" style="display: none;">
+      <button id="moveLeftButton" onclick="move('left')" style="margin-left: 20px; margin-top: 10px;">Move Left</button>
+      <button id="moveRightButton" onclick="move('right')" style="margin-right: 20px; margin-top: 10px;">Move Right</button>
+    </div>
+    <div id="status"></div>
+    <div id="side-container" style="display: none;">
+      <div id="left" class="side">
+        <h2>Left Side</h2>
+        <p>Sheep: <span id="leftSheep">0</span></p>
+        <p>Wolves: <span id="leftWolves">0</span></p>
+      </div>
+      <div id="right" class="side">
+        <h2>Right Side</h2>
+        <p>Sheep: <span id="rightSheep">0</span></p>
+        <p>Wolves: <span id="rightWolves">0</span></p>
+      </div>
+    </div>
+    <div id="timer"></div>
+    <button id="solution" onclick="viewSolution()">Solution</button>
+    <button id="logout" onclick="logout()">Logout</button>
+  </div>
+
+  <div id="popup" class="popup" style="display: none;"></div>
+
+  <div id="overlay" class="overlay" style="display: none;"></div>
+
+  <script>
+    let leftSheep = 0;
+    let leftWolves = 0;
+    let rightSheep = 0;
+    let rightWolves = 0;
+    let timerInterval;
+    let boatPosition = "left"; // Initial boat position
+
+    function startPuzzle() {
+      let initialSheep = parseInt(document.getElementById("initialSheep").value);
+      let initialWolves = parseInt(document.getElementById("initialWolves").value);
+
+      if (isNaN(initialSheep) || isNaN(initialWolves)) {
+        document.getElementById("status").innerHTML = "Please enter valid numbers for initial sheep and wolves.";
+        return;
+      }
+
+      if (initialSheep < 0 || initialWolves < 0) {
+        document.getElementById("status").innerHTML = "Please enter non-negative numbers for initial sheep and wolves.";
+        return;
+      }
+
+      leftSheep = initialSheep;
+      leftWolves = initialWolves;
+      updateDisplay();
+      document.getElementById("buttons").style.display = "block";
+      document.getElementById("side-container").style.display = "flex";
+      document.getElementById("status").innerHTML = "Puzzle started with " + initialSheep + " sheep and " + initialWolves + " wolves.";
+      startTimer();
+    }
+
+    function startTimer() {
+      let seconds = 0;
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById("timer").textContent = "Time Elapsed: " + formatTime(seconds);
+      }, 1000);
+    }
+
+    function formatTime(seconds) {
+      let minutes = Math.floor(seconds / 60);
+      let remainingSeconds = seconds % 60;
+      return `${minutes}:${remainingSeconds < 10 ? '0' + remainingSeconds : remainingSeconds}`;
+    }
+
+    function move(direction) {
+  if (direction === boatPosition) {
+    document.getElementById("status").innerHTML = "Boat is already on the " + direction + " side.";
+    return;
+  }
+  
+  let sheepToMove = parseInt(prompt("Enter the number of sheep to move " + direction + " (0, 1, or 2):"));
+  let wolvesToMove = parseInt(prompt("Enter the number of wolves to move " + direction + " (0, 1, or 2):"));
+  
+  // Check if any animals are selected to move
+  if (sheepToMove === 0 && wolvesToMove === 0) {
+    document.getElementById("status").innerHTML = "Please select at least one animal to move.";
+    return;
+  }
+  
+  validateMove(sheepToMove, wolvesToMove, direction);
+}
+
+function validateMove(sheepToMove, wolvesToMove, direction) {
+  if (isNaN(sheepToMove) || isNaN(wolvesToMove) || sheepToMove < 0 || sheepToMove > 2 || wolvesToMove < 0 || wolvesToMove > 2) {
+    document.getElementById("status").innerHTML = "Invalid input. Please enter 0, 1, or 2 for both sheep and wolves.";
+    return;
+  }
+
+  let isValidMove = true;
+  if (direction === "right") {
+    if (sheepToMove + wolvesToMove > 2) {
+      isValidMove = false;
+    }
+    if (leftSheep > 0 && (sheepToMove > leftSheep || wolvesToMove > leftWolves || (leftWolves - wolvesToMove) > (leftSheep - sheepToMove))) {
+      isValidMove = false;
+    }
+  } else {
+    if (sheepToMove + wolvesToMove > 2) {
+      isValidMove = false;
+    }
+    if (rightSheep > 0 && (sheepToMove > rightSheep || wolvesToMove > rightWolves || (rightWolves - wolvesToMove) > (rightSheep - sheepToMove))) {
+      isValidMove = false;
+    }
+  }
+
+  if (!isValidMove) {
+    document.getElementById("status").innerHTML = "Invalid move. Please follow the rules.";
+    showPopup("Invalid Move!");
+    clearInterval(timerInterval);
+    document.getElementById("timer").textContent = "";
+    return;
+  }
+
+  // Update sheep and wolves counts based on the move
+  if (direction === "right") {
+    leftSheep -= sheepToMove;
+    leftWolves -= wolvesToMove;
+    rightSheep += sheepToMove;
+    rightWolves += wolvesToMove;
+  } else {
+    rightSheep -= sheepToMove;
+    rightWolves -= wolvesToMove;
+    leftSheep += sheepToMove;
+    leftWolves += wolvesToMove;
+  }
+
+  // Check if the rule is violated
+  if (leftSheep > 0 && leftWolves > leftSheep) {
+    document.getElementById("status").innerHTML = "Rule violated: Number of wolves cannot outnumber the number of sheep on either side of the river.";
+    showPopup("Invalid Move!");
+    clearInterval(timerInterval);
+    document.getElementById("timer").textContent = "";
+    return;
+  }
+
+  updateDisplay();
+  document.getElementById("status").innerHTML = "Moved " + sheepToMove + " sheep and " + wolvesToMove + " wolves " + direction + ".";
+  
+  // Check if puzzle is solved
+  if (leftSheep === 0 && leftWolves === 0) {
+    clearInterval(timerInterval);
+    document.getElementById("timer").textContent = "";
+    puzzleSolved();
+  }
+}
+
+
+    function puzzleSolved() {
+      let timeTaken = document.getElementById("timer").textContent.replace("Time Elapsed: ", "");
+      if (timeTaken.trim() === "") {
+        timeTaken = "0:00"; // Default time if timer hasn't started
+      }
+      document.getElementById("status").innerHTML = "Puzzle solved! You have successfully transferred all sheep and wolves to the right side in " + timeTaken + ".";
+      showPopup("Congratulations! You solved the puzzle in " + timeTaken + ".");
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "";
+  
+      // Adjust the position of buttons
+      document.getElementById("moveLeftButton").style.marginLeft = "50px";
+      document.getElementById("moveRightButton").style.marginRight = "50px";
+      document.getElementById("buttons").style.marginTop = "20px";
+    }
+
+    function updateDisplay() {
+      document.getElementById("leftSheep").textContent = leftSheep;
+      document.getElementById("leftWolves").textContent = leftWolves;
+      document.getElementById("rightSheep").textContent = rightSheep;
+      document.getElementById("rightWolves").textContent = rightWolves;
+    }
+
+    function showPopup(message) {
+      document.getElementById("popup").innerHTML = `<h2>${message}</h2>`;
+      document.getElementById("popup").style.display = "block";
+      document.getElementById("overlay").style.display = "block";
+    }
+
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+      document.getElementById("overlay").style.display = "none";
+    }
+
+    function restartGame() {
+      leftSheep = 0;
+      leftWolves = 0;
+      rightSheep = 0;
+      rightWolves = 0;
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "";
+      document.getElementById("buttons").style.display = "none";
+      document.getElementById("side-container").style.display = "none";
+      document.getElementById("initialSheep").value = "";
+      document.getElementById("initialWolves").value = "";
+      document.getElementById("status").innerHTML = "";
+    }
+
+    function viewSolution() {
+      // Redirect to solution page (replace 'solution.html' with your actual solution page)
+      window.location.href = "solution.html";
+    }
+
+    function logout() {
+      // Redirect to the Flask route for logging out
+      window.location.href = "/logout";
+    }
+  </script>
+</body>
+</html>
