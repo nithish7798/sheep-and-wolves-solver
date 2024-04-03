@@ -1,28 +1,25 @@
-1.	Clone: Retrieve the repository.
+# Step 1: Clone the Repository
+git clone https://github.com/nithish7798/sheep-and-wolves-solver.git
 
-Command: git clone <repository_url>
+# Step 2: Navigate to the Project Directory and create virtual env
+python -m venv venv
 
-2.	Virtual Environment: Isolate dependencies.
-
-Command: virtualenv venv
-
-3.	Activate: Engage the virtual environment.
-
-Command:
-On Windows: venv\Scripts\activate
-On macOS/Linux: source venv/bin/activate
-
-4.	Dependencies: Install required packages.
-Command: pip install -r requirements.txt
-
-5.	Database Configuration: Setup database settings.
-
-6.	Configure database URI in config.py.
+# Step 3: Activate the Virtual Environment
+# On Windows:
+venv\Scripts\activate
+# On macOS and Linux:
+source venv/bin/activate
 
 
-7.	Run: Execute the Flask application.
+# Step 4: Run the Application by giving the commands
+# 1. go to dev folder and run the command
+    cd dev
+ # 2. inside dev run the command to install dependencies
+   
+    pip install -r requirements.txt
 
-8.	Access: Visit the application URL in a web browser.
+# 3. inside dev run the command to run the project
+    flask run
 
-URL: http://localhost:5000
-![image](https://github.com/nithish7798/sheep-and-wolves-solver/assets/158990842/06bfbfe6-06b8-4695-9be6-38a70096e46d)
+# Step 5: Access the Application
+# Once the application is running, you can access it by navigating to `http://localhost:5000` in your web browser.
