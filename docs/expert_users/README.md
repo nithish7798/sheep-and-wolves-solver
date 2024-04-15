@@ -28,3 +28,10 @@ pip install -r requirements.txt
 
 # run the project again
 flask run
+
+# if the flask Command is not found
+
+export PATH=$PATH:$(pwd)/venv/bin
+
+Run the application again
+flask run
