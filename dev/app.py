@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from collections import deque
 from semanticnetsagent import SemanticNetsAgent, State
+from solution import bfs_solution  # Ensure this is imported correctly at the top
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -24,6 +25,29 @@ class User(db.Model):
 @app.route('/')
 def home():
     return render_template('signup.html')
+
+@app.route('/solution', methods=['POST'])
+def solution():
+    try:
+        initialSheep = int(request.form['initialSheep'])
+        initialWolves = int(request.form['initialWolves'])
+    except ValueError:
+        return jsonify({'error': 'Invalid input data: Non-integer values provided'}), 400
+    except KeyError:
+        return jsonify({'error': 'Invalid input data: Missing fields'}), 400
+
+    solution_steps = bfs_solution(initialSheep, initialWolves)
+    if solution_steps is None:
+        solution_steps = ["No valid solution exists for the given number of sheep and wolves."]
+    elif not solution_steps:
+        solution_steps = ["No possible solution could be found."]
+    else:
+        solution_steps = [str(step) for step in solution_steps]  # Ensure steps are strings
+
+    return render_template('solution.html', steps=solution_steps)
+
+
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -66,42 +90,11 @@ def login():
             error = 'Invalid email or password'
     return render_template('login.html', error=error)
 
-
 @app.route('/welcome')
 def welcome():
-    if 'user_id' in session:
-        user_id = session.get('user_id')
-        user = User.query.get(user_id)
-        if user:
-            fullname = user.fullname
-            return render_template('welcome.html', fullname=fullname)
-        else:
-            session.clear()
-            return redirect(url_for('login'))
-    else:
-        return redirect(url_for('login'))
-    
-@app.route('/solution', methods=['POST'])
-def solution():
-    print("Solution function called")  # Add this line
-    try:
-        if request.is_json:
-            data = request.get_json()
-            initialSheep = int(data['initialSheep'])
-            initialWolves = int(data['initialWolves'])
-        else:
-            initialSheep = int(request.form['initialSheep'])
-            initialWolves = int(request.form['initialWolves'])
-    except KeyError:
-        return jsonify({'error': 'Missing input data'}), 400
-    except ValueError:
-        return jsonify({'error': 'Invalid input data. Please provide integers for initialSheep and initialWolves'}), 400
-
-    agent = SemanticNetsAgent()
-    solution = agent.solve(initialSheep, initialWolves)
-    print("Solution:", solution)  # Add this line to print the solution
-    return jsonify(solution)
-
+    # Your existing logic to prepare the game state
+    # Reset any session variables if necessary or set defaults
+    return render_template('welcome.html', initialSheep=1, initialWolves=1)
 
 
 
@@ -114,4 +107,4 @@ def logout():
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=False)
+    app.run(debug=True)

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solution Page</title>
+</head>
+<body>
+    <h1>Solution to Sheep and Wolves Game</h1>
+    <!-- Check if steps is a string or a list and display accordingly -->
+    {% if steps %}
+    {% if steps == ["No valid solution exists for the given number of sheep and wolves."] %}
+        <p>{{ steps[0] }}</p>
+    {% else %}
+        <ol>
+            {% for step in steps %}
+                <li>{{ step }}</li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+{% else %}
+    <p>No solution found. This configuration is unsolvable.</p>
+{% endif %}
+    <button onclick="window.location='/welcome'">Go Back to Game</button>
+</body>
+</html>
